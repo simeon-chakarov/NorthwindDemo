@@ -21,10 +21,10 @@ Default URLs:
 
 ## Database Setup
 
-Install SQL Server (if not installed).
-Restore the Northwind database.
-Ensure the SQL Server service is running.
-Default development connection string:
+1. Install SQL Server (if not installed).
+2. Restore the Northwind database.
+3. Ensure the SQL Server service is running.
+4. Default development connection string:
 
 "ConnectionStrings": {
   "Northwind": "Server=localhost;Database=Northwind;Trusted_Connection=True;TrustServerCertificate=True;"
