@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Service Unavailable";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center p-5">
+
+                    <div class="mb-4">
+                        <span class="display-5 text-danger">
+                            ⚠
+                        </span>
+                    </div>
+
+                    <h3 class="mb-3">API is currently unavailable</h3>
+
+                    <p class="text-muted mb-4">
+                        We are unable to retrieve data at the moment.
+                        This may be due to a temporary network issue or the API service being offline.
+                        Please try again shortly.
+                    </p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <a asp-controller="Customers"
+                           asp-action="Index"
+                           class="btn btn-primary">
+                            Retry
+                        </a>
+
+                        <a asp-controller="Customers"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Back to Customers
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
