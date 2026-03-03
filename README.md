@@ -18,3 +18,16 @@ ASP.NET Core solution containing:
 Default URLs:
 - MVC: https://localhost:7265
 - API: https://localhost:7013
+
+## Database Setup
+
+Install SQL Server (if not installed).
+Restore the Northwind database.
+Ensure the SQL Server service is running.
+Default development connection string:
+
+"ConnectionStrings": {
+  "Northwind": "Server=localhost;Database=Northwind;Trusted_Connection=True;TrustServerCertificate=True;"
+}
+
+If needed, update appsettings.Development.json.
