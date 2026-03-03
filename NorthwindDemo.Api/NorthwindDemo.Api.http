@@ -1,6 +1,9 @@
-@NorthwindDemo.Api_HostAddress = http://localhost:5052
+@base = https://localhost:7013
 
-GET {{NorthwindDemo.Api_HostAddress}}/weatherforecast/
+### Get customers
+GET {{base}}/api/customers
 Accept: application/json
 
-###
+### Get customer by id
+GET {{base}}/api/customers/ALFKI
+Accept: application/json
