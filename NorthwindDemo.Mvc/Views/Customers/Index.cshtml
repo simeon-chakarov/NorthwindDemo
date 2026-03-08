@@ -2,8 +2,9 @@
 
 <h2>Customers</h2>
 
-<form method="get" class="d-flex gap-2">
-    <input type="text"
+<form id="searchForm" method="get" class="d-flex gap-2">
+    <input id="searchInput"
+           type="text"
            name="search"
            value="@Model.Search"
            class="form-control"
@@ -40,4 +41,15 @@
       .then(r => r.json())
       .then(_ => console.log('CORS OK'))
       .catch(e => console.error('CORS FAIL', e));
+
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+
+    let timer;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            searchForm.submit();
+        }, 500);
+    });
 </script>
