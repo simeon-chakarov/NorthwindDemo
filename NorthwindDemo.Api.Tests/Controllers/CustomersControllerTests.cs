@@ -38,6 +38,13 @@ namespace NorthwindDemo.Api.Tests.Controllers
             var model = Assert.IsAssignableFrom<PagedResponseDto<CustomerListItemDto>>(ok.Value);
 
             Assert.Equal(2, model.Items.Count);
+            Assert.Equal(1, model.Page);
+            Assert.Equal(20, model.PageSize);
+            Assert.Equal(2, model.TotalCount);
+
+            service.Verify(
+                s => s.GetCustomersAsync(null, 1, 20, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]

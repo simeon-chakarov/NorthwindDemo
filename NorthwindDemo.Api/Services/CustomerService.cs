@@ -19,6 +19,9 @@ namespace NorthwindDemo.Api.Services
             int pageSize,
             CancellationToken ct = default)
         {
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize is < 1 or > 100 ? 20 : pageSize;
+
             var trimmedSearch = search?.Trim();
             var cacheKey = $"customers|search={trimmedSearch}|page={page}|pageSize={pageSize}";
 

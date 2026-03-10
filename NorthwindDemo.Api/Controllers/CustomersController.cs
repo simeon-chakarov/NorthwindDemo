@@ -20,10 +20,6 @@ namespace NorthwindDemo.Api.Controllers
             [FromQuery] int pageSize = 20,
             CancellationToken ct = default)
         {
-            page = page < 1 ? 1 : page;
-            pageSize = pageSize is < 1 or > 100 ? 20 : pageSize;
-
-            //await Task.Delay(TimeSpan.FromSeconds(10), ct); //OperationCanceledException
             var result = await _service.GetCustomersAsync(search, page, pageSize, ct);
             return Ok(result);
         }
