@@ -5,6 +5,7 @@ namespace NorthwindDemo.Api.Data;
 
 public partial class NorthwindContext : DbContext
 {
+    //Scaffold-DbContext "Server=localhost;Database=Northwind;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -Context NorthwindContext -ContextDir Data -OutputDir Data/Entities -DataAnnotations -Force
     public NorthwindContext()
     {
     }
