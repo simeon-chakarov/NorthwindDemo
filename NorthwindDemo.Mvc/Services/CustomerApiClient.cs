@@ -8,14 +8,20 @@ namespace NorthwindDemo.Mvc.Services
     {
         private readonly HttpClient _http = http;
 
-        public async Task<IReadOnlyList<CustomerListItemDto>> GetCustomersAsync(string? search, CancellationToken ct = default)
+        public async Task<PagedResponseDto<CustomerListItemDto>> GetCustomersAsync(
+            string? search,
+            int page,
+            int pageSize,
+            CancellationToken ct = default)
         {
             var url = string.IsNullOrWhiteSpace(search)
-                ? "/api/customers"
-                : $"/api/customers?search={Uri.EscapeDataString(search)}";
+                ? $"/api/customers?page={page}&pageSize={pageSize}"
+                : $"/api/customers?search={Uri.EscapeDataString(search)}&page={page}&pageSize={pageSize}";
 
-            var data = await _http.GetFromJsonAsync<List<CustomerListItemDto>>(url, ct);
-            return data ?? [];
+            //var url = $"/api/customers?search={Uri.EscapeDataString(search ?? string.Empty)}&page={page}&pageSize={pageSize}";
+
+            var data = await _http.GetFromJsonAsync<PagedResponseDto<CustomerListItemDto>>(url, ct);
+            return data ?? new PagedResponseDto<CustomerListItemDto>([], page, pageSize, 0);
         }
 
         public async Task<CustomerDetailsDto?> GetCustomerByIdAsync(string id, CancellationToken ct = default)

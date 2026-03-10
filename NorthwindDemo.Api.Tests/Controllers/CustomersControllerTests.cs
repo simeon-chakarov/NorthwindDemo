@@ -13,27 +13,29 @@ namespace NorthwindDemo.Api.Tests.Controllers
         public async Task GetCustomers_ReturnsOkWithList()
         {
             // Arrange
-            var customers = new List<CustomerListItemDto>
-            {
-                new("ALFKI", "Alfreds Futterkiste", 5),
-                new("ANATR", "Ana Trujillo", 2)
-            };
+            var customers = new PagedResponseDto<CustomerListItemDto>
+            (
+                [
+                    new("ALFKI", "Alfreds Futterkiste", 5),
+                    new("ANATR", "Ana Trujillo", 2)
+                ], 1, 20, 2
+            );
 
             var service = new Mock<ICustomerService>();
             service
-                .Setup(s => s.GetCustomersAsync(null, It.IsAny<CancellationToken>()))
+                .Setup(s => s.GetCustomersAsync(null, 1, 20, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customers);
 
             var controller = new CustomersController(service.Object);
 
             // Act
-            var result = await controller.GetCustomers(null, CancellationToken.None);
+            var result = await controller.GetCustomers(null, 1, 20, CancellationToken.None);
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result.Result);
-            var model = Assert.IsAssignableFrom<IReadOnlyList<CustomerListItemDto>>(ok.Value);
+            var model = Assert.IsAssignableFrom<PagedResponseDto<CustomerListItemDto>>(ok.Value);
 
-            Assert.Equal(2, model.Count);
+            Assert.Equal(2, model.Items.Count);
         }
 
         [Fact]

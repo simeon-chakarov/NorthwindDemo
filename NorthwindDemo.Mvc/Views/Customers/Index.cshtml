@@ -23,18 +23,46 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var c in Model.Customers)
+        @foreach (var c in Model.Page.Items)
         {
             <tr>
-                <td>@c.CompanyName</td>
+                <td class="fw-semibold">@c.CompanyName</td>
                 <td>@c.OrdersCount</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@c.Id">Details</a>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id">Details</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<nav class="d-flex justify-content-between align-items-center">
+    <div class="text-muted">
+        Page @Model.Page.Page of @Model.Page.TotalPages (@Model.Page.TotalCount total)
+    </div>
+
+    <ul class="pagination mb-0">
+        <li class="page-item @(Model.Page.HasPrevious ? "" : "disabled")">
+            <a class="page-link"
+               asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-page="@(Model.Page.Page - 1)"
+               asp-route-pageSize="@Model.Page.PageSize">
+                Previous
+            </a>
+        </li>
+
+        <li class="page-item @(Model.Page.HasNext ? "" : "disabled")">
+            <a class="page-link"
+               asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-page="@(Model.Page.Page + 1)"
+               asp-route-pageSize="@Model.Page.PageSize">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
 
 <script>
     fetch('https://localhost:7013/api/customers')
@@ -42,14 +70,14 @@
       .then(_ => console.log('CORS OK'))
       .catch(e => console.error('CORS FAIL', e));
 
-    const searchInput = document.getElementById('searchInput');
-    const searchForm = document.getElementById('searchForm');
+    // const searchInput = document.getElementById('searchInput');
+    // const searchForm = document.getElementById('searchForm');
 
-    let timer;
-    searchInput.addEventListener('input', function () {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            searchForm.submit();
-        }, 500);
-    });
+    // let timer;
+    // searchInput.addEventListener('input', function () {
+    //     clearTimeout(timer);
+    //     timer = setTimeout(() => {
+    //         searchForm.submit();
+    //     }, 500);
+    // });
 </script>

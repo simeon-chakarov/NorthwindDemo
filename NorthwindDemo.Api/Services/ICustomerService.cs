@@ -5,7 +5,11 @@ namespace NorthwindDemo.Api.Services
 {
     public interface ICustomerService
     {
-        Task<IReadOnlyList<CustomerListItemDto>> GetCustomersAsync(string? search, CancellationToken ct = default);
+        Task<PagedResponseDto<CustomerListItemDto>> GetCustomersAsync(
+            string? search,
+            int page,
+            int pageSize,
+            CancellationToken ct = default);
 
         Task<CustomerDetailsDto?> GetCustomerByIdAsync(string id, CancellationToken ct = default);
 

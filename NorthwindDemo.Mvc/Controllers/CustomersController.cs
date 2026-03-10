@@ -8,16 +8,16 @@ namespace NorthwindDemo.Mvc.Controllers
     {
         private readonly ICustomerApiClient _api = api;
 
-        public async Task<IActionResult> Index(string? search, CancellationToken ct)
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 20, CancellationToken ct = default)
         {
             try
             {
-                var customers = await _api.GetCustomersAsync(search, ct);
+                var result = await _api.GetCustomersAsync(search, page, pageSize, ct);
 
                 var vm = new CustomerIndexViewModel
                 {
                     Search = search,
-                    Customers = customers
+                    Page = result
                 };
 
                 return View(vm);
