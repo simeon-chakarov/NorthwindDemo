@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
 using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
@@ -154,6 +156,18 @@ namespace NorthwindDemo.Api.Tests.Controllers
             var result = await controller.GetCustomerOrders("NOPE", CancellationToken.None);
 
             Assert.IsType<NotFoundResult>(result.Result);
+        }
+    }
+
+    public class CustomersApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+    {
+        private readonly HttpClient _client = factory.CreateClient();
+
+        [Fact]
+        public async Task GetCustomers_ReturnsOk()
+        {
+            var response = await _client.GetAsync("/api/customers");
+            response.EnsureSuccessStatusCode();
         }
     }
 }
