@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
 using NorthwindDemo.Api.Data;
-using NorthwindDemo.Api.Data.Entities;
 using NorthwindDemo.Api.Services.Helpers;
 
 namespace NorthwindDemo.Api.Services
@@ -22,31 +21,26 @@ namespace NorthwindDemo.Api.Services
             page = page < 1 ? 1 : page;
             pageSize = pageSize is < 1 or > 100 ? 20 : pageSize;
 
-            var trimmedSearch = search?.Trim();
+            var trimmedSearch = string.IsNullOrWhiteSpace(search) ? string.Empty : search.Trim().ToUpperInvariant();
             var cacheKey = $"customers|search={trimmedSearch}|page={page}|pageSize={pageSize}";
 
-            if (_cache.TryGetValue(cacheKey, out PagedResponseDto<CustomerListItemDto>? cached) &&
-                cached is not null)
+            if (_cache.TryGetValue(cacheKey, out PagedResponseDto<CustomerListItemDto>? cached) && cached is not null)
             {
                 return cached;
             }
 
-            IQueryable<Customer> query = _dbContext.Customers.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(trimmedSearch))
+            var query = _dbContext.Customers.AsNoTracking();
+            if (trimmedSearch.Length > 0)
             {
-                query = query.Where(c =>
-                    c.CompanyName != null &&
-                    EF.Functions.Like(c.CompanyName, $"{trimmedSearch}%"));
+                query = query.Where(c => EF.Functions.Like(c.CompanyName, $"{trimmedSearch}%"));
             }
 
             var totalCount = await query.CountAsync(ct);
 
-            var skip = (page - 1) * pageSize;
-
             var items = await query
                 .OrderBy(c => c.CompanyName)
-                .Skip(skip)
+                .ThenBy(c => c.CustomerId)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new CustomerListItemDto(
                     c.CustomerId,
@@ -77,7 +71,7 @@ namespace NorthwindDemo.Api.Services
                 .Where(c => c.CustomerId == id)
                 .Select(c => new CustomerDetailsDto(
                     c.CustomerId,
-                    c.CompanyName ?? "",
+                    c.CompanyName ?? string.Empty,
                     c.ContactName,
                     c.ContactTitle,
                     c.Address,

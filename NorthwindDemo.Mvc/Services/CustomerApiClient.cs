@@ -14,11 +14,7 @@ namespace NorthwindDemo.Mvc.Services
             int pageSize,
             CancellationToken ct = default)
         {
-            var url = string.IsNullOrWhiteSpace(search)
-                ? $"/api/customers?page={page}&pageSize={pageSize}"
-                : $"/api/customers?search={Uri.EscapeDataString(search)}&page={page}&pageSize={pageSize}";
-
-            //var url = $"/api/customers?search={Uri.EscapeDataString(search ?? string.Empty)}&page={page}&pageSize={pageSize}";
+            var url = $"/api/customers?search={Uri.EscapeDataString(search ?? string.Empty)}&page={page}&pageSize={pageSize}";
 
             var data = await _http.GetFromJsonAsync<PagedResponseDto<CustomerListItemDto>>(url, ct);
             return data ?? new PagedResponseDto<CustomerListItemDto>([], page, pageSize, 0);
