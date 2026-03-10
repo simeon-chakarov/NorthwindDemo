@@ -14,27 +14,29 @@ namespace NorthwindDemo.Mvc.Tests.Controllers
         public async Task Index_WhenNoSearch_ReturnsViewWithCustomers()
         {
             // Arrange
-            var customers = new List<CustomerListItemDto>
-            {
-                new("ALFKI", "Alfreds", 3),
-                new("ANATR", "Ana", 1),
-            };
+            var customers = new PagedResponseDto<CustomerListItemDto>
+            (
+                [
+                    new("ALFKI", "Alfreds", 3),
+                    new("ANATR", "Ana", 1)
+                ], 1, 20, 2
+            );
 
             var api = new Mock<ICustomerApiClient>(MockBehavior.Strict);
-            api.Setup(a => a.GetCustomersAsync(null, It.IsAny<CancellationToken>()))
+            api.Setup(a => a.GetCustomersAsync(null, 1, 20, It.IsAny<CancellationToken>()))
                .ReturnsAsync(customers);
 
             var controller = new CustomersController(api.Object);
 
             // Act
-            var result = await controller.Index(null, CancellationToken.None);
+            var result = await controller.Index(null,1, 20, CancellationToken.None);
 
             // Assert
             var view = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<CustomerIndexViewModel>(view.Model);
 
             Assert.Null(model.Search);
-            Assert.Equal(2, model.Customers.Count);
+            Assert.Equal(2, model.Page.Items.Count);
 
             api.VerifyAll();
         }
@@ -43,25 +45,27 @@ namespace NorthwindDemo.Mvc.Tests.Controllers
         public async Task Index_WhenSearchProvided_PassesSearchToApi_AndReturnsView()
         {
             // Arrange
-            var customers = new List<CustomerListItemDto>
-            {
-                new("ALFKI", "Alfreds", 3)
-            };
+            var customers = new PagedResponseDto<CustomerListItemDto>
+            (
+                [
+                    new("ALFKI", "Alfreds", 3)
+                ], 1, 20, 2
+            );
 
             var api = new Mock<ICustomerApiClient>(MockBehavior.Strict);
-            api.Setup(a => a.GetCustomersAsync("alf", It.IsAny<CancellationToken>())).ReturnsAsync(customers);
+            api.Setup(a => a.GetCustomersAsync("alf", 1, 20, It.IsAny<CancellationToken>())).ReturnsAsync(customers);
 
             var controller = new CustomersController(api.Object);
 
             // Act
-            var result = await controller.Index("alf", CancellationToken.None);
+            var result = await controller.Index("alf", 1, 20, CancellationToken.None);
 
             // Assert
             var view = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<CustomerIndexViewModel>(view.Model);
 
             Assert.Equal("alf", model.Search);
-            Assert.Single(model.Customers);
+            Assert.Single(model.Page.Items);
 
             api.VerifyAll();
         }

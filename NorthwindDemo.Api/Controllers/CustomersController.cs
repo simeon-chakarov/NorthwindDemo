@@ -11,14 +11,21 @@ namespace NorthwindDemo.Api.Controllers
     {
         private readonly ICustomerService _service = service;
 
-        // GET /api/customers?search=alf
+        // GET /api/customers?search=alf&page=1&pageSize=20
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyList<CustomerListItemDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<CustomerListItemDto>>> GetCustomers([FromQuery] string? search, CancellationToken ct)
+        [ProducesResponseType(typeof(PagedResponseDto<CustomerListItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResponseDto<CustomerListItemDto>>> GetCustomers(
+            [FromQuery] string? search,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken ct = default)
         {
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize is < 1 or > 100 ? 20 : pageSize;
+
             //await Task.Delay(TimeSpan.FromSeconds(10), ct); //OperationCanceledException
-            var customers = await _service.GetCustomersAsync(search, ct);
-            return Ok(customers);
+            var result = await _service.GetCustomersAsync(search, page, pageSize, ct);
+            return Ok(result);
         }
 
         // GET /api/customers/{id}

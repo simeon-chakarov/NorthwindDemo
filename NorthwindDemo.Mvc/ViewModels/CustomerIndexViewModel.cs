@@ -5,6 +5,6 @@ namespace NorthwindDemo.Mvc.ViewModels
     public sealed class CustomerIndexViewModel
     {
         public string? Search { get; init; }
-        public IReadOnlyList<CustomerListItemDto> Customers { get; init; } = [];
+        public PagedResponseDto<CustomerListItemDto> Page { get; init; } = new([], 1, 20, 0);
     }
 }

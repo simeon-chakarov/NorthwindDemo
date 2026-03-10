@@ -10,7 +10,11 @@ namespace NorthwindDemo.Api.Services
     {
         private readonly NorthwindContext _dbContext = dbContext;
 
-        public async Task<IReadOnlyList<CustomerListItemDto>> GetCustomersAsync(string? search, CancellationToken ct = default)
+        public async Task<PagedResponseDto<CustomerListItemDto>> GetCustomersAsync(
+            string? search,
+            int page,
+            int pageSize,
+            CancellationToken ct = default)
         {
             var query = _dbContext.Customers.AsNoTracking();
 
@@ -20,8 +24,12 @@ namespace NorthwindDemo.Api.Services
                 query = query.Where(c => c.CompanyName != null && EF.Functions.Like(c.CompanyName, $"%{trimedSearch}%"));
             }
 
-            var customers = await query
+            var totalCount = await query.CountAsync(ct);
+
+            var items = await query
                 .OrderBy(c => c.CompanyName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new CustomerListItemDto(
                     c.CustomerId,
                     c.CompanyName ?? "",
@@ -29,7 +37,7 @@ namespace NorthwindDemo.Api.Services
                 ))
                 .ToListAsync(ct);
 
-            return customers;
+            return new PagedResponseDto<CustomerListItemDto>(items, page, pageSize, totalCount);
         }
 
         public async Task<CustomerDetailsDto?> GetCustomerByIdAsync(string id, CancellationToken ct = default)
