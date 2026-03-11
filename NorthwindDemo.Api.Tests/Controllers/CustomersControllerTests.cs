@@ -5,6 +5,8 @@ using Moq;
 using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
 using NorthwindDemo.Api.Controllers;
+using NorthwindDemo.Api.Enums;
+using NorthwindDemo.Api.Helpers;
 using NorthwindDemo.Api.Services;
 
 namespace NorthwindDemo.Api.Tests.Controllers
@@ -25,13 +27,13 @@ namespace NorthwindDemo.Api.Tests.Controllers
 
             var service = new Mock<ICustomerService>();
             service
-                .Setup(s => s.GetCustomersAsync(null, 1, 20, It.IsAny<CancellationToken>()))
+                .Setup(s => s.GetCustomersAsync(null, null, null, CustomerSortField.CompanyName, SortDirection.Ascending, 1, 20, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customers);
 
             var controller = new CustomersController(service.Object);
 
             // Act
-            var result = await controller.GetCustomers(null, 1, 20, CancellationToken.None);
+            var result = await controller.GetCustomers(null, null, null, null, null, 1, 20, CancellationToken.None);
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result.Result);
@@ -43,7 +45,7 @@ namespace NorthwindDemo.Api.Tests.Controllers
             Assert.Equal(2, model.TotalCount);
 
             service.Verify(
-                s => s.GetCustomersAsync(null, 1, 20, It.IsAny<CancellationToken>()),
+                s => s.GetCustomersAsync(null, null, null, CustomerSortField.CompanyName, SortDirection.Ascending, 1, 20, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 

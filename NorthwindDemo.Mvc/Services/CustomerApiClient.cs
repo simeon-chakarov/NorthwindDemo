@@ -1,13 +1,17 @@
-﻿using Northwind.Contracts.Customers;
+using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
 using System.Net;
 
 namespace NorthwindDemo.Mvc.Services
 {
+    /// <summary>
+    /// Typed HTTP client that communicates with the Northwind REST API.
+    /// </summary>
     public sealed class CustomerApiClient(HttpClient http) : ICustomerApiClient
     {
         private readonly HttpClient _http = http;
 
+        /// <inheritdoc/>
         public async Task<PagedResponseDto<CustomerListItemDto>> GetCustomersAsync(
             string? search,
             int page,
@@ -20,9 +24,10 @@ namespace NorthwindDemo.Mvc.Services
             return data ?? new PagedResponseDto<CustomerListItemDto>([], page, pageSize, 0);
         }
 
+        /// <inheritdoc/>
         public async Task<CustomerDetailsDto?> GetCustomerByIdAsync(string id, CancellationToken ct = default)
         {
-            var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}", ct);
+            using var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}", ct);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
             {
@@ -33,9 +38,10 @@ namespace NorthwindDemo.Mvc.Services
             return await resp.Content.ReadFromJsonAsync<CustomerDetailsDto>(cancellationToken: ct);
         }
 
+        /// <inheritdoc/>
         public async Task<CustomerOrdersResponseDto?> GetCustomerOrdersAsync(string id, CancellationToken ct = default)
         {
-            var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}/orders", ct);
+            using var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}/orders", ct);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
             {
