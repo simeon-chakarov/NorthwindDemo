@@ -21,6 +21,12 @@ namespace NorthwindDemo.Mvc.Controllers
         /// <returns>The customer list view, or the ApiUnavailable view if the API cannot be reached.</returns>
         public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 20, CancellationToken ct = default)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
             try
             {
                 var result = await _api.GetCustomersAsync(search, page, pageSize, ct);
@@ -91,5 +97,7 @@ namespace NorthwindDemo.Mvc.Controllers
                 return View("ApiUnavailable");
             }
         }
+
+        private bool IsAuthenticated() => !string.IsNullOrWhiteSpace(HttpContext.Session.GetString("AccessToken"));
     }
 }

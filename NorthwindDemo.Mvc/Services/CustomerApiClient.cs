@@ -1,15 +1,31 @@
 using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace NorthwindDemo.Mvc.Services
 {
     /// <summary>
     /// Typed HTTP client that communicates with the Northwind REST API.
     /// </summary>
-    public sealed class CustomerApiClient(HttpClient http) : ICustomerApiClient
+    public sealed class CustomerApiClient(HttpClient http, IHttpContextAccessor httpContextAccessor) : ICustomerApiClient
     {
         private readonly HttpClient _http = http;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+        private void ApplyBearerToken()
+        {
+            var token = _httpContextAccessor.HttpContext?.Session.GetString("AccessToken");
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                _http.DefaultRequestHeaders.Authorization = null;
+            }
+        }
 
         /// <inheritdoc/>
         public async Task<PagedResponseDto<CustomerListItemDto>> GetCustomersAsync(
@@ -18,6 +34,8 @@ namespace NorthwindDemo.Mvc.Services
             int pageSize,
             CancellationToken ct = default)
         {
+            ApplyBearerToken();
+
             var url = $"/api/customers?search={Uri.EscapeDataString(search ?? string.Empty)}&page={page}&pageSize={pageSize}";
 
             var data = await _http.GetFromJsonAsync<PagedResponseDto<CustomerListItemDto>>(url, ct);
@@ -27,6 +45,8 @@ namespace NorthwindDemo.Mvc.Services
         /// <inheritdoc/>
         public async Task<CustomerDetailsDto?> GetCustomerByIdAsync(string id, CancellationToken ct = default)
         {
+            ApplyBearerToken();
+
             using var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}", ct);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
@@ -41,6 +61,8 @@ namespace NorthwindDemo.Mvc.Services
         /// <inheritdoc/>
         public async Task<CustomerOrdersResponseDto?> GetCustomerOrdersAsync(string id, CancellationToken ct = default)
         {
+            ApplyBearerToken();
+
             using var resp = await _http.GetAsync($"/api/customers/{Uri.EscapeDataString(id)}/orders", ct);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)

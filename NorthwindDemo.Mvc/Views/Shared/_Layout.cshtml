@@ -29,6 +29,22 @@
                     </ul>
                 </div>
             </div>
+            <ul class="navbar-nav ms-auto">
+                @if (Context.Session.GetString("AccessToken") is not null)
+                {
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-link nav-link">Logout</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                    </li>
+                }
+            </ul>
         </nav>
     </header>
     <div class="container">
