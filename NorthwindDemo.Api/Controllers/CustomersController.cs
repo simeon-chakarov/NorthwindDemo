@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Contracts.Customers;
 using Northwind.Contracts.Orders;
 using NorthwindDemo.Api.Helpers;
@@ -28,6 +29,7 @@ namespace NorthwindDemo.Api.Controllers
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A 200 OK response with the paged customer list.</returns>
         // GET /api/customers?search=alf&city=London&country=UK&sortBy=OrderCount&sortDirection=desc&page=1&pageSize=20
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [ProducesResponseType(typeof(PagedResponseDto<CustomerListItemDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<PagedResponseDto<CustomerListItemDto>>> GetCustomers(
